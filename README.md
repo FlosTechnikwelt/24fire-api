@@ -110,7 +110,7 @@ Jeder Kunde hat die möglichkeit für seine VM einen API-Key zu bekommen.
 
 ```javascript
   myFireApi.vm().restartVM().then(data => {
-    console.log('Liste der VMs:', data);
+    console.log('Antwort:', data);
   }).catch(error => {
     console.error('Fehler:', error);
   });

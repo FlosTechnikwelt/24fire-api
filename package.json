@@ -1,6 +1,6 @@
 {
     "name": "24fire-api",
-    "version": "1.0.4",
+    "version": "1.0.7",
     "description": "Nutze die 24fire api in Nodejs, sicher und schnell",
     "main": "src/index.js",
     "repository": {
