@@ -24,6 +24,13 @@ Wenn du Feedback hast, wenden dich an mich unter support@flostechnikwelt.de
 ## Author & Credits
  - Flostechnikwelt
  - Lars.1309
+## Empfehlenswert
+
+ - [Offizielle API Dokumentation](https://documenter.getpostman.com/view/18955936/2s93zB6hJu)
+ - [24fire](https://24fire.de/)
+ - [Discord](https://discord.gg/24fire)
+
+
 ## Wie wird es installiert?
 
 Um die 24fire-api in deinem Projekt zu installieren, führe bitte den folgenden Befehl aus
@@ -33,13 +40,17 @@ Um die 24fire-api in deinem Projekt zu installieren, führe bitte den folgenden 
 ```
 
 
-## Empfehlenswert
+## Wie bekomme ich einen API Key?
 
- - [Offizielle API Dokumentation](https://documenter.getpostman.com/view/18955936/2s93zB6hJu)
- - [24fire](https://24fire.de/)
- - [Discord](https://discord.gg/24fire)
-
-## Wie verwende ich fireapi-24fire?
+Jeder Kunde hat die möglichkeit für seine VM einen API-Key zu bekommen.
+#### 1. Wähle deinen Server aus
+![Bild1](https://i.imgur.com/F5k2Z2s.png)
+#### 2. Öffne das Menu durch den Buttn mit den drei Strichen
+![Bild2](https://i.imgur.com/YPkNMX7.png)
+#### 3. Klicke auf "API-Key anzeigen"
+![Bild3](https://i.imgur.com/Qq95Ojo.png)
+#### 4. Nun sollte dieses Modal erscheinen, hier kannst du den API-Key kopieren
+![Bild4](https://i.imgur.com/s2llq6W.png)## Wie verwende ich fireapi-24fire?
 
 
 ### Einen fireApi Client erstellen
