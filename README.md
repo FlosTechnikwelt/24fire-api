@@ -13,6 +13,7 @@ Die 24fire-api soll die Interaktion mit der 24fire Kunden Api vereinfachen und v
 - 🏃 Schnelle interaktion
 - ➡️ Direkte Anfragen ohne Middelware
 - ℹ️ Einfache Bedienung
+- 🆕 Neuste Version
 
 
 ## Optimierungen & Feedback
@@ -115,3 +116,68 @@ Jeder Kunde hat die möglichkeit für seine VM einen API-Key zu bekommen.
     console.error('Fehler:', error);
   });
 ```
+
+### Backup
+
+#### -> Alle Backups auflisten
+
+```javascript
+  myFireApi.backup().listBackups().then(data => {
+    console.log('Backup List:', data);
+  }).catch(error => {
+    console.error('Fehler:', error);
+  });
+```
+
+#### -> Ein neues Backup erstellen
+
+```javascript
+  myFireApi.backup().createBackup(description).then(data => {
+    console.log('Antwort:', data);
+  }).catch(error => {
+    console.error('Fehler:', error);
+  });
+```
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `description`      | `string` | **Optional**.  Es kann optional ein Beschreibung hinzugefügt werden. |
+
+
+#### -> Ein Backup Löschen
+
+```javascript
+  myFireApi.backup().deleteBackup(backupId).then(data => {
+    console.log('Antwort: ', data);
+  }).catch(error => {
+    console.error('Fehler: ', error);
+  });
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `backupId`      | `string` | **Benötigt**.  Die ID vom Backup welches gelöscht werden soll.  |
+
+
+### Monitoring
+
+#### -> Alle Messungen vom Server Abrufen
+
+```javascript
+  myFireApi.monitoring().getStats().then(data => {
+    console.log('Alle Messungen:', data);
+  }).catch(error => {
+    console.error('Fehler:', error);
+  });
+```
+
+#### -> Alle Ausfälle abrufen
+
+```javascript
+  myFireApi.monitoring().retieceOutages().then(data => {
+    console.log('Antwort:', data);
+  }).catch(error => {
+    console.error('Fehler:', error);
+  });
+```
+
+
