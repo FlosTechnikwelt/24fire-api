@@ -1,24 +1,24 @@
 {
     "name": "24fire-api",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "Nutze die 24fire api in Nodejs, sicher und schnell",
     "main": "src/index.js",
     "repository": {
-      "type": "git",
-      "url": "https://github.com/FlosTechnikwelt/24fire-api.git"
+        "type": "git",
+        "url": "git+https://github.com/FlosTechnikwelt/24fire-api.git"
     },
     "homepage": "https://github.com/FlosTechnikwelt/24fire-api.git",
     "keywords": [
-      "24fire",
-      "24fireAPI",
-      "api",
-      "Hosting",
-      "wrapper",
-      "flostechnikwelt"
+        "24fire",
+        "24fireAPI",
+        "api",
+        "Hosting",
+        "wrapper",
+        "flostechnikwelt"
     ],
     "author": "FlosTechnikwelt",
     "license": "Apache-2.0",
     "dependencies": {
-      "axios": "^1.6.4"
+        "axios": "^1.6.4"
     }
-  }
+}
