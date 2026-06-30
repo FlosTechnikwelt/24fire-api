@@ -19,7 +19,7 @@ Verwalte deinen Account, KVM-Server, Domains und Webspaces direkt aus deinem Cod
 
 ## Voraussetzungen
 
-- Node.js **20 oder neuer** (wegen des globalen `fetch`)
+- Node.js **18 oder neuer** (wegen des globalen `fetch`)
 
 ## Installation
 
