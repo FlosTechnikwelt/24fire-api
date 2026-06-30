@@ -3,181 +3,217 @@
 
 # 24fire-api
 
-
-Die 24fire-api soll die Interaktion mit der 24fire Kunden Api vereinfachen und verbessern.
-
+Ein einfacher Node.js-Wrapper für die **24fire REST-API v2**.
+Verwalte deinen Account, KVM-Server, Domains und Webspaces direkt aus deinem Code.
 
 ## Features
 
-- 🔗 Kommunikation über SSL
-- 🏃 Schnelle interaktion
-- ➡️ Direkte Anfragen ohne Middelware
-- ℹ️ Einfache Bedienung
-- 🆕 Neuste Version
+- 🔗 Kommunikation über SSL (`https://manage.24fire.de/api`)
+- 📦 **Keine Abhängigkeiten** nutzt das eingebaute `fetch` von Node.js
+- 🧩 Intuitive, verschachtelte Bedienung (`fire.kvm(id).backup.list()`)
+- 🟦 Mitgelieferte TypeScript-Typen
+- ⚡ Schnell & leichtgewichtig
 
+> **Hinweis:** Dies ist Version **2.0**. Die API-Struktur hat sich gegenüber v1 komplett geändert
+> (neue Base-URL, neuer Auth-Header, `internal_id` pro Dienst). Siehe [Migration von v1](#migration-von-v1).
 
-## Optimierungen & Feedback
+## Voraussetzungen
 
-Welche Optimierungen hast du in deinem Code vorgenommen? Z.B. Refactoring, Performance-Verbesserungen
+- Node.js **20 oder neuer** (wegen des globalen `fetch`)
 
-Wenn du Feedback hast, wenden dich an mich unter support@flostechnikwelt.de
-
-## Author & Credits
- - Flostechnikwelt
- - Lars.1309
-## Empfehlenswert
-
- - [Offizielle API Dokumentation](https://documenter.getpostman.com/view/18955936/2s93zB6hJu)
- - [24fire](https://24fire.de/)
- - [Discord](https://discord.gg/24fire)
-
-
-## Wie wird es installiert?
-
-Um die 24fire-api in deinem Projekt zu installieren, führe bitte den folgenden Befehl aus
+## Installation
 
 ```bash
-  npm install 24fire-api
+npm install 24fire-api
 ```
 
+## API-Key erstellen
 
-## Wie bekomme ich einen API Key?
+1. Logge dich im [24fire Control Panel](https://manage.24fire.de) ein.
+2. Gehe zu **Einstellungen → API-Keys** und klicke auf „API-Key erstellen“.
+3. Speichere den Key sicher ab – er wird nur **einmal** angezeigt.
 
-Jeder Kunde hat die möglichkeit für seine VM einen API-Key zu bekommen.
-#### 1. Wähle deinen Server aus
-![Bild1](https://i.imgur.com/F5k2Z2s.png)
-#### 2. Öffne das Menu durch den Buttn mit den drei Strichen
-![Bild2](https://i.imgur.com/YPkNMX7.png)
-#### 3. Klicke auf "API-Key anzeigen"
-![Bild3](https://i.imgur.com/Qq95Ojo.png)
-#### 4. Nun sollte dieses Modal erscheinen, hier kannst du den API-Key kopieren
-![Bild4](https://i.imgur.com/s2llq6W.png)## Wie verwende ich fireapi-24fire?
-
-
-### Einen fireApi Client erstellen
+## Schnellstart
 
 ```javascript
-  const fireApi = require("24fire-api")
-  const apiKey = 'DEIN_API_SCHLÜSSEL';
-  const myFireApi = new fireApi(apiKey);
+const FireAPI = require('24fire-api');
+// oder:  import FireAPI from '24fire-api';
+
+const fire = new FireAPI('DEIN_API_KEY');
+
+// Account-Infos abrufen
+const account = await fire.account.info();
+console.log(account.data);
+
+// Alle Dienste anzeigen (hier findest du die internal_id jedes Dienstes)
+const services = await fire.account.services();
+console.log(services.data);
+
+// Einen Server starten
+await fire.kvm('INTERNAL_ID').start();
 ```
 
+Jede Methode gibt die API-Antwort im Format `{ status, message, data }` zurück.
+Bei Fehlern wird ein `FireAPIError` geworfen (siehe [Fehlerbehandlung](#fehlerbehandlung)).
 
+---
 
-### VM
-
-#### -> Zeige die VM Konfiguration an
+## Account
 
 ```javascript
-  myFireApi.vm().getVMconfig().then(data => {
-    console.log('VM config:', data);
-  }).catch(error => {
-    console.error('Fehler:', error);
-  });
+await fire.account.info();        // Account-Informationen (Name, E-Mail, Guthaben …)
+await fire.account.services();    // Übersicht aller aktiven Dienste (mit internal_id)
+await fire.account.donations();   // Daten zur Spendenseite
+await fire.account.affiliate();   // Daten zum Affiliate-System
 ```
 
-#### -> Den aktuellen VM Status Abrufen
+## KVM-Server
+
+Zuerst einen Server über seine `internal_id` auswählen:
 
 ```javascript
-  myFireApi.vm().getVMstatus().then(data => {
-    console.log('Aktueller VM Status:', data);
-  }).catch(error => {
-    console.error('Fehler:', error);
-  });
+const vm = fire.kvm('INTERNAL_ID');
 ```
 
-#### -> Die VM Starten
+### Allgemein
 
 ```javascript
-  myFireApi.vm().startVM().then(data => {
-    console.log('Antwort: ', data);
-  }).catch(error => {
-    console.error('Fehler: ', error);
-  });
+await vm.config();          // Konfiguration (Hardware, IPs, OS …)
+await vm.status();          // Status & Auslastung (running / stopped / …)
+
+await vm.power('start');    // Power-Aktion: 'start' | 'stop' | 'restart'
+await vm.start();           // Kurzform für power('start')
+await vm.stop();            // Kurzform für power('stop')
+await vm.restart();         // Kurzform für power('restart')
 ```
 
-#### -> Die VM herunterfahren
+### Backups
 
 ```javascript
-  myFireApi.vm().stopVM().then(data => {
-    console.log('Antwort: ', data);
-  }).catch(error => {
-    console.error('Fehler: ', error);
-  });
+await vm.backup.list();                       // Alle Backups auflisten
+await vm.backup.create('Notiz');              // Backup erstellen (24fire+), Notiz optional, max. 24 Zeichen
+await vm.backup.createStatus('BACKUP_ID');    // Status der Erstellung abfragen
+await vm.backup.restore('BACKUP_ID');         // Backup wiederherstellen (24fire+)
+await vm.backup.restoreStatus('BACKUP_ID');   // Status der Wiederherstellung abfragen
+await vm.backup.delete('BACKUP_ID');          // Backup löschen
 ```
 
-
-#### -> Die VM neustarten
+### Traffic
 
 ```javascript
-  myFireApi.vm().restartVM().then(data => {
-    console.log('Antwort:', data);
-  }).catch(error => {
-    console.error('Fehler:', error);
-  });
+await vm.traffic.current();   // Aktueller Traffic-Verbrauch des Monats
+await vm.traffic.log();       // Traffic-Log (Messung alle 10 Minuten)
+
+// Traffic-Diagramm generieren (24fire+)
+await vm.traffic.chart({
+    type: 'both',             // Eingehend / Ausgehend / Beides
+    summary: 'DAILY',         // DAILY | HOURLY | NONE
+    output: 'apexcharts',     // chartjs | apexcharts | base64
+    datapoints: 30,
+    size: '900x300',
+});
 ```
-
-### Backup
-
-#### -> Alle Backups auflisten
-
-```javascript
-  myFireApi.backup().listBackups().then(data => {
-    console.log('Backup List:', data);
-  }).catch(error => {
-    console.error('Fehler:', error);
-  });
-```
-
-#### -> Ein neues Backup erstellen
-
-```javascript
-  myFireApi.backup().createBackup(description).then(data => {
-    console.log('Antwort:', data);
-  }).catch(error => {
-    console.error('Fehler:', error);
-  });
-```
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `description`      | `string` | **Optional**.  Es kann optional ein Beschreibung hinzugefügt werden. |
-
-
-#### -> Ein Backup Löschen
-
-```javascript
-  myFireApi.backup().deleteBackup(backupId).then(data => {
-    console.log('Antwort: ', data);
-  }).catch(error => {
-    console.error('Fehler: ', error);
-  });
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `backupId`      | `string` | **Benötigt**.  Die ID vom Backup welches gelöscht werden soll.  |
-
 
 ### Monitoring
 
-#### -> Alle Messungen vom Server Abrufen
-
 ```javascript
-  myFireApi.monitoring().getStats().then(data => {
-    console.log('Alle Messungen:', data);
-  }).catch(error => {
-    console.error('Fehler:', error);
-  });
+await vm.monitoring.timings();      // Messungen abrufen
+await vm.monitoring.incidences();   // Ausfälle abrufen
 ```
 
-#### -> Alle Ausfälle abrufen
+### DDoS (24fire+)
 
 ```javascript
-  myFireApi.monitoring().retieceOutages().then(data => {
-    console.log('Antwort:', data);
-  }).catch(error => {
-    console.error('Fehler:', error);
-  });
+await vm.ddos.get();                // Aktuelle DDoS-Einstellungen abrufen
+await vm.ddos.change({
+    layer4: 'permanent',
+    layer7: 'on',
+    ip_address: '88.151.194.253',   // optional; ohne Angabe gilt es für alle IPv4 der VM
+});
 ```
+
+## Domains
+
+```javascript
+const domain = fire.domain('INTERNAL_ID');
+
+await domain.info();        // Domain-Informationen
+await domain.dns.list();    // Alle DNS-Einträge
+
+// DNS-Eintrag hinzufügen (24fire+)
+await domain.dns.add({ type: 'A', name: '*', data: '1.2.3.4' });
+
+// DNS-Eintrag bearbeiten (24fire+)
+await domain.dns.edit({ record_id: 'RECORD_ID', data: '5.6.7.8' });
+
+// DNS-Eintrag entfernen
+await domain.dns.remove('RECORD_ID');
+```
+
+## Webspace
+
+```javascript
+await fire.webspace('INTERNAL_ID').info();   // Webspace-Daten abrufen
+```
+
+---
+
+## Fehlerbehandlung
+
+Schlägt eine Anfrage fehl (HTTP-Fehler oder `status: "error"`), wird ein `FireAPIError` geworfen:
+
+```javascript
+const { FireAPIError } = require('24fire-api');
+
+try {
+    await fire.kvm('INTERNAL_ID').start();
+} catch (err) {
+    if (err instanceof FireAPIError) {
+        console.error('API-Fehler:', err.message);
+        console.error('HTTP-Status:', err.status);
+        console.error('Antwort:', err.response);
+    }
+}
+```
+
+## Migration von v1
+
+| | v1 (alt) | v2 (neu) |
+|---|---|---|
+| Base-URL | `https://api.24fire.de` | `https://manage.24fire.de/api` |
+| Auth-Header | `X-FIRE-APIKEY` | `X-Fire-Apikey` |
+| Server-Auswahl | global über den Key | pro Dienst über die `internal_id` |
+| Abhängigkeiten | `axios` | keine (eingebautes `fetch`) |
+
+**Beispiel:**
+
+```javascript
+// v1
+myFireApi.vm().getVMstatus();
+myFireApi.vm().startVM();
+myFireApi.backup().listBackups();
+
+// v2
+fire.kvm('INTERNAL_ID').status();
+fire.kvm('INTERNAL_ID').start();
+fire.kvm('INTERNAL_ID').backup.list();
+```
+
+> Manche Endpunkte (z. B. DNS-Verwaltung, Backups erstellen/wiederherstellen, DDoS, Traffic-Chart)
+> erfordern ein aktives **24fire+** Abonnement.
+
+## Author & Credits
+
+- Florian Linde <florian.linde@flostechnikwelt.de> (FlosTechnikwelt)
+
+## Empfehlenswert
+
+- [Offizielle API-Dokumentation (v2)](https://apidocs.24fire.de/v2)
+- [24fire](https://24fire.de/) 
+- [Discord](https://discord.gg/24fire)
+
+## Feedback
+
+Wenn du Feedback hast, wende dich an mich unter support@flostechnikwelt.de
 
 

@@ -1,8 +1,16 @@
 {
     "name": "24fire-api",
-    "version": "1.0.8",
-    "description": "Nutze die 24fire api in Nodejs, sicher und schnell",
+    "version": "2.0.0",
+    "description": "Einfacher, abhängigkeitsfreier Node.js-Wrapper für die 24fire REST-API v2",
     "main": "src/index.js",
+    "types": "src/index.d.ts",
+    "files": [
+        "src/index.js",
+        "src/index.d.ts"
+    ],
+    "engines": {
+        "node": ">=20"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/FlosTechnikwelt/24fire-api.git"
@@ -11,14 +19,15 @@
     "keywords": [
         "24fire",
         "24fireAPI",
+        "fireapi",
         "api",
+        "v2",
         "Hosting",
+        "kvm",
         "wrapper",
         "flostechnikwelt"
     ],
-    "author": "FlosTechnikwelt",
+    "author": "Florian Linde <florian.linde@flostechnikwelt.de>",
     "license": "Apache-2.0",
-    "dependencies": {
-        "axios": "^1.6.4"
-    }
+    "dependencies": {}
 }
